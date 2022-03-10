@@ -106,7 +106,7 @@ func main() {
 	addresses = append(addresses, Address{CID: "C2", ID: "2", State: "Haryana", Title: "Address Two", Owner: &Owner{Firstname: "Steve", Lastname: "Smith"}})
 	addresses = append(addresses, Address{CID: "C1", ID: "3", State: "Rajasthan", Title: "Address One.One", Owner: &Owner{Firstname: "John", Lastname: "Doe"}})
 	r.HandleFunc("/addresses/{cid}", getAddresses).Methods("GET")
-	r.HandleFunc("/addresses/{id}", getAddress).Methods("GET")
+	r.HandleFunc("/addresses/{cid}/{id}", getAddress).Methods("GET")
 	r.HandleFunc("/addresses", createAddress).Methods("POST")
 	r.HandleFunc("/addresses/{id}", updateAddress).Methods("PUT")
 	r.HandleFunc("/addresses/{id}", deleteAddress).Methods("DELETE")
