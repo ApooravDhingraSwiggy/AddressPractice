@@ -24,12 +24,11 @@ type Owner struct {
 
 var addresses []Address
 
-/*
-func getAddresses(w http.ResponseWriter, r *http.Request) {
+func getFullAddresses(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(addresses)
 }
-*/
+
 func getAddresses(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
@@ -70,6 +69,7 @@ func createAddress(w http.ResponseWriter, r *http.Request) {
 	var address Address
 	_ = json.NewDecoder(r.Body).Decode(&address)
 	address.ID = strconv.Itoa(rand.Intn(100000000))
+	address.CID = strconv.Itoa(rand.Intn(100000000))
 	addresses = append(addresses, address)
 	json.NewEncoder(w).Encode(address)
 }
@@ -106,10 +106,11 @@ func main() {
 	addresses = append(addresses, Address{CID: "C2", ID: "2", State: "Haryana", Title: "Address Two", Owner: &Owner{Firstname: "Steve", Lastname: "Smith"}})
 	addresses = append(addresses, Address{CID: "C1", ID: "3", State: "Rajasthan", Title: "Address One.One", Owner: &Owner{Firstname: "John", Lastname: "Doe"}})
 	r.HandleFunc("/addresses/{cid}", getAddresses).Methods("GET")
+	r.HandleFunc("/addresses", getFullAddresses).Methods("GET")
 	r.HandleFunc("/addresses/{cid}/{id}", getAddress).Methods("GET")
 	r.HandleFunc("/addresses", createAddress).Methods("POST")
-	r.HandleFunc("/addresses/{id}", updateAddress).Methods("PUT")
-	r.HandleFunc("/addresses/{id}", deleteAddress).Methods("DELETE")
+	r.HandleFunc("/addresses/{cid}/{id}", updateAddress).Methods("PUT")
+	r.HandleFunc("/addresses/{cid}/{id}", deleteAddress).Methods("DELETE")
 
 	fmt.Printf("Starting server at port 8000\n")
 	log.Fatal(http.ListenAndServe(":8000", r))
