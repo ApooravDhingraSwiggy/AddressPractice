@@ -11,6 +11,7 @@ import (
 )
 
 type Address struct {
+	CID   string `json:"cid"`
 	ID    string `json:"id"`
 	State string `json:"state"`
 	Title string `json:"title"`
@@ -23,9 +24,21 @@ type Owner struct {
 
 var addresses []Address
 
+/*
 func getAddresses(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(addresses)
+}
+*/
+func getAddresses(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for _, item := range addresses {
+		if item.CID == params["cid"] {
+			json.NewEncoder(w).Encode(item)
+			//return
+		}
+	}
 }
 
 //Delete func
@@ -89,9 +102,10 @@ func updateAddress(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 
-	addresses = append(addresses, Address{ID: "1", State: "Rajastan", Title: "Address One", Owner: &Owner{Firstname: "John", Lastname: "Doe"}})
-	addresses = append(addresses, Address{ID: "2", State: "Haryana", Title: "Address Two", Owner: &Owner{Firstname: "Steve", Lastname: "Smith"}})
-	r.HandleFunc("/addresses", getAddresses).Methods("GET")
+	addresses = append(addresses, Address{CID: "C1", ID: "1", State: "Rajasthan", Title: "Address One", Owner: &Owner{Firstname: "John", Lastname: "Doe"}})
+	addresses = append(addresses, Address{CID: "C2", ID: "2", State: "Haryana", Title: "Address Two", Owner: &Owner{Firstname: "Steve", Lastname: "Smith"}})
+	addresses = append(addresses, Address{CID: "C1", ID: "3", State: "Rajasthan", Title: "Address One.One", Owner: &Owner{Firstname: "John", Lastname: "Doe"}})
+	r.HandleFunc("/addresses/{cid}", getAddresses).Methods("GET")
 	r.HandleFunc("/addresses/{id}", getAddress).Methods("GET")
 	r.HandleFunc("/addresses", createAddress).Methods("POST")
 	r.HandleFunc("/addresses/{id}", updateAddress).Methods("PUT")
